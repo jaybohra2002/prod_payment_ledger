@@ -1,0 +1,73 @@
+# ============================================================
+# Docker Compose — Local Development Infrastructure
+# ============================================================
+# This file defines the databases our services need locally.
+# We do NOT containerize our Node.js services yet (that's Phase 4).
+# For now, we run Node.js natively with `pnpm run dev` and only
+# containerize Postgres + Redis as infrastructure dependencies.
+# ============================================================
+
+services:
+  # ---- PostgreSQL: Our primary data store ----
+  postgres:
+    # Official Postgres image, version 16, built on Alpine Linux (~80MB)
+    image: postgres:16-alpine
+
+    # Inject credentials from the .env file (never hardcode secrets)
+    env_file:
+      - .env
+
+    # Map host port 5432 → container port 5432
+    # This lets us connect from our laptop using pgAdmin, DBeaver, or psql
+    # In production, we would NOT expose this port to the public internet
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+    # Persist database data to a named volume so it survives container restarts
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    # Health check: Docker will ping Postgres every 5 seconds.
+    # The container status goes from "starting" → "healthy" only when
+    # pg_isready confirms Postgres is genuinely accepting connections.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ledger_user} -d ${POSTGRES_DB:-payment_ledger}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    # Auto-restart if the container crashes (but not if we explicitly stop it)
+    restart: unless-stopped
+
+  # ---- Redis: Used for caching, idempotency keys, and event streams ----
+  redis:
+    # Official Redis image, version 7, on Alpine Linux
+    image: redis:7-alpine
+
+    # Start Redis with:
+    #   --appendonly yes  → Enable AOF persistence (logs every write to disk)
+    #   --maxmemory 256mb → Cap memory usage so it doesn't eat your laptop's RAM
+    #   --maxmemory-policy allkeys-lru → When memory is full, evict least-recently-used keys
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+
+    # Persist Redis data so cached idempotency keys survive restarts
+    volumes:
+      - redisdata:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    restart: unless-stopped
+
+# Named volumes — these are managed by Docker and persist on your hard drive
+# even if you delete the containers. To nuke everything: docker compose down -v
+volumes:
+  pgdata:
+  redisdata:
