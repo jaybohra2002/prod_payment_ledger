@@ -1,19 +1,35 @@
 {
   "name": "ledger-core",
   "version": "1.0.0",
+  "type": "module",
   "description": "Double-entry accounting engine",
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "test:stage1": "node --import tsx --test src/modules/accounts/__tests__/stage1-unit.test.ts",
+    "test:stage2": "node --import tsx --test src/modules/accounts/__tests__/stage2-integration.test.ts",
+    "test:stage3": "node --import tsx --test src/modules/accounts/__tests__/stage3-concurrency.test.ts",
+    "test:stage4": "node --import tsx --test src/modules/accounts/__tests__/stage4-load-benchmark.test.ts",
+    "test:stage5": "node --import tsx --test src/modules/accounts/__tests__/stage5-explain-analyze.test.ts",
+    "test:all": "node --import tsx --test --test-concurrency=1 src/modules/accounts/__tests__/stage1-unit.test.ts src/modules/accounts/__tests__/stage2-integration.test.ts src/modules/accounts/__tests__/stage3-concurrency.test.ts src/modules/accounts/__tests__/stage4-load-benchmark.test.ts src/modules/accounts/__tests__/stage5-explain-analyze.test.ts",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.4",
     "fastify": "^4.29.1",
-    "pino": "^8.21.0"
+    "fastify-plugin": "^6.0.1",
+    "pino": "^8.21.0",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "drizzle-kit": "^0.31.11",
     "pino-pretty": "^10.3.1",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"

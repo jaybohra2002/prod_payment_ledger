@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791991159331,
+      "tag": "0000_dark_the_enforcers",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791991188793,
+      "tag": "0001_ledger_security_triggers",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792867278944,
+      "tag": "0002_multi_tenant_uuidv7_and_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793211208324,
+      "tag": "0003_add_accounts_natural_key",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793329433080,
+      "tag": "0004_upgrade_amount_to_bigint",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793991582526,
+      "tag": "0005_accounts_hardening_and_timestamptz",
+      "breakpoints": true
+    }
+  ]
+}

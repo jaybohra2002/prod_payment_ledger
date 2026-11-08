@@ -1,0 +1,1 @@
+ALTER TABLE "ledger_entries" ALTER COLUMN "amount" SET DATA TYPE bigint;
